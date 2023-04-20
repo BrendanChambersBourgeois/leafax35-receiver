@@ -24,7 +24,7 @@ Install the required Python libraries using the following command:
 pip install -r requirements.txt
 ```
 
-### Leafax 35 Receiver (`leafax35_receiver.py`)
+## Leafax 35 Receiver (`leafax35_receiver.py`)
 
 This script is designed to receive and decode images transmitted by the Leafax 35. You need to connect the Leafax 35 to an analog telephone interface (e.g., U.S. Robotics USR5637 USB modem) and an analog phone line.
 
@@ -36,7 +36,7 @@ python leafax35_receiver.py --port <modem_port>
 
 Replace `<modem_port>` with the appropriate port for your modem (e.g., `/dev/ttyUSB0` or `COM3`).
 
-### Leafax 35 Data Capture (`leafax35_data_capture.py`)
+## Leafax 35 Data Capture (`leafax35_data_capture.py`)
 
 This script captures data transmitted by the Leafax 35 and saves it to a file for further analysis. You need to connect the Leafax 35 to an analog telephone interface (e.g., U.S. Robotics USR5637 USB modem) and an analog phone line.
 
