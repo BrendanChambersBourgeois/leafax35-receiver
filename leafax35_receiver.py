@@ -39,11 +39,16 @@ def read_image_data(serial_port):
 def save_and_decode_image(image_data, filename):
     unique_filename = f"{filename}_{uuid.uuid4().hex}.jpg"
 
-    with io.BytesIO(base64.b64decode(image_data)) as image_stream:
-        img = Image.open(image_stream)
-        img.save(f"data/{unique_filename}", 'JPEG')
-
+    with open(unique_filename, 'wb') as f:
+        f.write(image_data)
     print(f"Image received and saved as '{unique_filename}'.")
+
+    with open(unique_filename, 'rb') as f:
+        with io.BytesIO(f.read()) as image_stream:
+            img = Image.open(image_stream)
+            img.save(f"data/{unique_filename}", 'JPEG')
+    print(f"Image decoded and saved as '{unique_filename}'.")
+
 
 
 def receive_image_data(serial_port, width, height):
