@@ -12,7 +12,9 @@ def parse_arguments():
     parser.add_argument('-m', '--mode', help='The mode of operation: "receive" (default) to receive and decode images, or "capture" to capture transmitted data.', default='receive')
     parser.add_argument('-w', '--width', help='The width of the received image in pixels (default: 640).', default=640, type=int)
     parser.add_argument('-h', '--height', help='The height of the received image in pixels (default: 480).', default=480, type=int)
+    parser.add_argument('-t', '--transmission_format', help='The transmission format (AP, CCITT_60, CCITT_120, or UPI).', required=True, choices=['AP', 'CCITT_60', 'CCITT_120', 'UPI'])
     return parser.parse_args()
+
 
 
 def configure_modem(serial_port, transmission_format):
@@ -70,8 +72,6 @@ def receive_image_data(serial_port, width, height, transmission_format):
     filename = "received_image"
     save_and_decode_image(image_data, filename)
 
-
-
 	
 def capture_data(serial_port):
     with open("data/captured_data.bin", 'wb') as f:
@@ -90,13 +90,10 @@ def main():
     baud_rate = 9600
     serial_port = None
 
-    # Add a new command-line argument for transmission format
-    transmission_format = input("Enter the transmission format (AP, CCITT_60, CCITT_120, or UPI): ")
-
     try:
         serial_port = serial.Serial(modem_port, baud_rate, timeout=5)
         if args.mode == 'receive':
-            receive_image_data(serial_port, args.width, args.height, transmission_format)
+            receive_image_data(serial_port, args.width, args.height, args.transmission_format)
         elif args.mode == 'capture':
             capture_data(serial_port)
         else:
