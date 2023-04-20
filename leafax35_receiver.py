@@ -1,17 +1,19 @@
 from PIL import Image
 import argparse
-import os
 import serial
 import sys
 import time
 import io
 import uuid
+import base64
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Receive and decode images transmitted by the Leafax 35 or capture data transmitted by the device.")
     parser.add_argument('-p', '--port', help='The modem port (e.g., /dev/ttyUSB0 or COM3)', required=True)
     parser.add_argument('-m', '--mode', help='The mode of operation: "receive" (default) to receive and decode images, or "capture" to capture transmitted data.', default='receive')
+    parser.add_argument('-w', '--width', help='The width of the received image in pixels (default: 640).', default=640, type=int)
+    parser.add_argument('-h', '--height', help='The height of the received image in pixels (default: 480).', default=480, type=int)
     return parser.parse_args()
 
 
@@ -34,31 +36,25 @@ def read_image_data(serial_port):
     return image_data
 
 
-def save_image(image_data, output_dir):
-    filename = os.path.join(output_dir, 'received_image.jpg')
+def save_image(image_data, filename):
+    unique_filename = f"{filename}_{uuid.uuid4().hex}.jpg"
 
-    # If a file with the same name already exists, append a GUID to the filename
-    if os.path.exists(filename):
-        guid = uuid.uuid4().hex
-        filename_without_ext, ext = os.path.splitext(filename)
-        filename = f"{filename_without_ext}_{guid}{ext}"
-
-    with open(filename, 'wb') as f:
+    with open(unique_filename, 'wb') as f:
         f.write(image_data)
-    print(f"Image received and saved as '{filename}'.")
+    print(f"Image received and saved as '{unique_filename}'.")
 
 
-def decode_image_data(image_data, width, height, output_dir):
-    with open(os.path.join(output_dir, 'received_image.raw'), 'wb') as f:
+def decode_image_data(image_data, width, height):
+    with open("data/received_image.raw", 'wb') as f:
         f.write(base64.b64decode(image_data))
 
     with io.BytesIO(base64.b64decode(image_data)) as image_stream:
         img = Image.open(image_stream)
-        img.save(os.path.join(output_dir, 'received_image.jpg'), 'JPEG')
+        img.save("data/received_image.jpg", 'JPEG')
     print(f"Image decoded and saved as 'received_image.jpg'.")
 
 
-def receive_image_data(serial_port, output_dir, width, height):
+def receive_image_data(serial_port, width, height):
     configure_modem(serial_port)
     print("Modem configured. Waiting for incoming transmission...")
 
@@ -67,18 +63,19 @@ def receive_image_data(serial_port, output_dir, width, height):
     if len(image_data) == 0:
         raise Exception("Error: Received image data is empty.")
 
-    save_image(image_data, output_dir)
-    decode_image_data(image_data, width, height, output_dir)
+    filename = "data/received_image.jpg"
+    save_image(image_data, filename)
+    decode_image_data(image_data, width, height)
 
-
-def capture_data(serial_port, output_dir):
-    with open(os.path.join(output_dir, 'captured_data.bin'), 'wb') as f:
+	
+def capture_data(serial_port):
+    with open("data/captured_data.bin", 'wb') as f:
         start_time = time.time()
         while time.time() - start_time < 300:  # Capture data for 5 minutes (adjust as needed)
             data = serial_port.read(1024)
             if data:
                 f.write(data)
-                start_time = time.time()  # Reset timer if data is received
+            start_time = time.time()  # Reset timer if data is received
     print("Data captured and saved as 'captured_data.bin'.")
 
 
@@ -86,16 +83,13 @@ def main():
     args = parse_arguments()
     modem_port = args.port
     baud_rate = 9600
-    output_dir = 'data'
 
     try:
         with serial.Serial(modem_port, baud_rate, timeout=5) as serial_port:
             if args.mode == 'receive':
-                width = 640
-                height = 480
-                receive_image_data(serial_port, output_dir, width, height)
+                receive_image_data(serial_port, args.width, args.height)
             elif args.mode == 'capture':
-                capture_data(serial_port, output_dir)
+                capture_data(serial_port)
             else:
                 raise ValueError(f"Invalid mode: {args.mode}")
     except serial.serialutil.SerialException as e:
@@ -104,6 +98,8 @@ def main():
     except Exception as e:
         print(f"Error: {str(e)}")
         sys.exit(1)
+    finally:
+        serial_port.close()
 
 if __name__ == "__main__":
     main()
