@@ -16,33 +16,39 @@ To run the Leafax 35 receiver, you'll need the following hardware components:
 
 Additionally, you'll need Python 3.x installed on your system.
 
-## Installation
+## Requirements
 
-1. Clone this repository:
-```
-git clone https://github.com/BrendanChambersBourgeois/Leafax35Receiver.git
-```
-2. Change to the project directory:
-```
-cd Leafax35Receiver
-```
-3. Install the required Python packages:
-```
+Install the required Python libraries using the following command:
+
+```bash
 pip install -r requirements.txt
 ```
 
+### Leafax 35 Receiver (`leafax35_receiver.py`)
 
-## Usage
+This script is designed to receive and decode images transmitted by the Leafax 35. You need to connect the Leafax 35 to an analog telephone interface (e.g., U.S. Robotics USR5637 USB modem) and an analog phone line.
 
-1. Connect the USB modem to an available USB port on your computer or microcontroller.
-2. Connect the modem to an analog phone line.
-3. Run the receiver script:
+Usage:
 
+```bash
+python leafax35_receiver.py --port <modem_port>
 ```
-python leafax35_receiver.py
+
+Replace `<modem_port>` with the appropriate port for your modem (e.g., `/dev/ttyUSB0` or `COM3`).
+
+### Leafax 35 Data Capture (`leafax35_data_capture.py`)
+
+This script captures data transmitted by the Leafax 35 and saves it to a file for further analysis. You need to connect the Leafax 35 to an analog telephone interface (e.g., U.S. Robotics USR5637 USB modem) and an analog phone line.
+
+Usage:
+
+```bash
+python leafax35_data_capture.py --port <modem_port>
 ```
 
-The script will configure the modem, wait for incoming image data, decode it, and save the received image as a JPEG file.
+Replace `<modem_port>` with the appropriate port for your modem (e.g., `/dev/ttyUSB0` or `COM3`).
+
+After capturing the data, you can analyze the `captured_data.bin` file to determine the Leafax 35 specifications, such as image format, encoding, and other relevant details.
 
 ## Contributing
 
