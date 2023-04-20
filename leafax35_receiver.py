@@ -5,8 +5,6 @@ import sys
 import time
 import io
 import uuid
-import base64
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Receive and decode images transmitted by the Leafax 35 or capture data transmitted by the device.")
