@@ -55,8 +55,6 @@ The --mode parameter specifies the operation mode. It accepts two values:
 
 Replace `<transmission_format>` with the desired transmission format (e.g., `AP`, `CCITT_60`, `CCITT_120`, or `UPI`).
 
-The script will automatically create a `data` folder in the current directory, where it will store received images and captured data.
-
 ## Contributing
 
 Contributions to this project are welcome. Please open an issue to discuss your ideas or submit a pull request with your proposed changes.
