@@ -83,21 +83,25 @@ def main():
     args = parse_arguments()
     modem_port = args.port
     baud_rate = 9600
+    serial_port = None
 
     try:
-        with serial.Serial(modem_port, baud_rate, timeout=5) as serial_port:
-            if args.mode == 'receive':
-                receive_image_data(serial_port, args.width, args.height)
-            elif args.mode == 'capture':
-                capture_data(serial_port)
-            else:
-                raise ValueError(f"Invalid mode: {args.mode}")
+        serial_port = serial.Serial(modem_port, baud_rate, timeout=5)
+        if args.mode == 'receive':
+            receive_image_data(serial_port, args.width, args.height)
+        elif args.mode == 'capture':
+            capture_data(serial_port)
+        else:
+            raise ValueError(f"Invalid mode: {args.mode}")
     except serial.serialutil.SerialException as e:
         print(f"Error: Could not open the serial port '{modem_port}'. Please check the port and try again.")
         sys.exit(1)
     except Exception as e:
         print(f"Error: {str(e)}")
         sys.exit(1)
+    finally:
+        if serial_port is not None:
+            serial_port.close()
 
 
 if __name__ == "__main__":
