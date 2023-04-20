@@ -15,10 +15,19 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def configure_modem(serial_port):
+def configure_modem(serial_port, transmission_format):
     serial_port.write(b'ATZ\r')  # Reset modem
     time.sleep(1)
     serial_port.write(b'ATM0\r')  # Set modem to data mode
+    time.sleep(1)
+    if transmission_format == 'AP':
+        serial_port.write(b'ATS11=144\r')  # Set LPM to 144
+    elif transmission_format == 'CCITT_60':
+        serial_port.write(b'ATS11=60\r')  # Set LPM to 60
+    elif transmission_format == 'CCITT_120':
+        serial_port.write(b'ATS11=120\r')  # Set LPM to 120
+    elif transmission_format == 'UPI':
+        serial_port.write(b'ATS11=120\r')  # Set LPM to 120
     time.sleep(1)
     serial_port.write(b'AT+MS=V32B,0,9600\r')  # Set modulation scheme
     time.sleep(1)
@@ -49,8 +58,8 @@ def save_and_decode_image(image_data, filename):
 
 
 
-def receive_image_data(serial_port, width, height):
-    configure_modem(serial_port)
+def receive_image_data(serial_port, width, height, transmission_format):
+    configure_modem(serial_port, transmission_format)
     print("Modem configured. Waiting for incoming transmission...")
 
     image_data = read_image_data(serial_port)
@@ -60,6 +69,7 @@ def receive_image_data(serial_port, width, height):
 
     filename = "received_image"
     save_and_decode_image(image_data, filename)
+
 
 
 	
@@ -80,10 +90,13 @@ def main():
     baud_rate = 9600
     serial_port = None
 
+    # Add a new command-line argument for transmission format
+    transmission_format = input("Enter the transmission format (AP, CCITT_60, CCITT_120, or UPI): ")
+
     try:
         serial_port = serial.Serial(modem_port, baud_rate, timeout=5)
         if args.mode == 'receive':
-            receive_image_data(serial_port, args.width, args.height)
+            receive_image_data(serial_port, args.width, args.height, transmission_format)
         elif args.mode == 'capture':
             capture_data(serial_port)
         else:
@@ -97,7 +110,6 @@ def main():
     finally:
         if serial_port is not None:
             serial_port.close()
-
 
 if __name__ == "__main__":
     main()
