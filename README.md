@@ -16,39 +16,31 @@ To run the Leafax 35 receiver, you'll need the following hardware components:
 
 Additionally, you'll need Python 3.x installed on your system.
 
-## Requirements
+## Installation and Usage
 
-Install the required Python libraries using the following command:
+1. Clone this repository on your local machine.
+2. Navigate to the cloned directory and run the following command to install the required Python libraries:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Leafax 35 Receiver (`leafax35_receiver.py`)
-
-This script is designed to receive and decode images transmitted by the Leafax 35. You need to connect the Leafax 35 to an analog telephone interface (e.g., U.S. Robotics USR5637 USB modem) and an analog phone line.
-
 Usage:
 
+To run the Leafax 35 Receiver and Data Capture script, use the following command:
+
 ```bash
-python leafax35_receiver.py --port <modem_port>
+python leafax35.py --port <modem_port> --mode <operation_mode>
 ```
 
 Replace `<modem_port>` with the appropriate port for your modem (e.g., `/dev/ttyUSB0` or `COM3`).
 
-## Leafax 35 Data Capture (`leafax35_data_capture.py`)
+The --mode parameter specifies the operation mode. It accepts two values:
 
-This script captures data transmitted by the Leafax 35 and saves it to a file for further analysis. You need to connect the Leafax 35 to an analog telephone interface (e.g., U.S. Robotics USR5637 USB modem) and an analog phone line.
+- `receive` to receive and decode images transmitted by the Leafax 35.
+- `capture` to capture transmitted data for further analysis.
 
-Usage:
-
-```bash
-python leafax35_data_capture.py --port <modem_port>
-```
-
-Replace `<modem_port>` with the appropriate port for your modem (e.g., `/dev/ttyUSB0` or `COM3`).
-
-After capturing the data, you can analyze the `captured_data.bin` file to determine the Leafax 35 specifications, such as image format, encoding, and other relevant details.
+The script will automatically create a `data` folder in the current directory, where it will store received images and captured data.
 
 ## Contributing
 
